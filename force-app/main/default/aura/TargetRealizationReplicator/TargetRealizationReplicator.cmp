@@ -1,0 +1,67 @@
+<!--
+ - Created by bbeli001 on 21.05.2018.
+ -->
+<aura:component description="TargetRealizationReplicator" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="TargetRealizationCloneController" >
+        <aura:attribute name="RecordLoad" type="Object" />
+        <aura:attribute name="RecordSave" type="Object" />
+        <aura:attribute name="SimpleRecordLoad" type="Object" />
+        <aura:attribute name="SimpleRecordSave" type="Object" />
+        <aura:attribute name="recordError" type="String"/>
+
+    <force:recordData aura:id="RecordReplicatorLoad"
+                      recordId="{!v.recordId}"
+                      targetFields="{!v.SimpleRecordLoad}"
+                      targetRecord="{!v.RecordLoad}"
+                      targetError="{!v.recordError}"
+                      fields="Start_Date__c, End_Date__c, Target__c, Value__c, Value_Distribution_Type__c"
+                      recordUpdated="{!c.recordUpdated}"
+                      mode="EDIT"
+                      />
+
+    <force:recordData aura:id="RecordReplicatorSave"
+                      targetFields="{!v.SimpleRecordSave}"
+                      targetRecord="{!v.RecordSave}"
+                      targetError="{!v.recordError}"
+                      fields="Start_Date__c, End_Date__c, Target__c, Value__c, Value_Distribution_Type__c"
+                      mode="EDIT"/>
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">Clone Target Realization Record</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap ">
+
+
+                <div>
+                <ui:inputDate aura:id="StartDate" label="Start Date" value="{!v.SimpleRecordSave.Start_Date__c}" displayDatePicker="true"/>
+
+                <ui:inputDate aura:id="EndDate" label="End Date" value="{!v.SimpleRecordSave.End_Date__c}" displayDatePicker="true"/>
+                </div>
+
+
+                <ui:message title="Did you know ?" closable="true">
+                    <p>Newly created record will preserve all the original data except new Start/End Date and automatically assigned Number.</p>
+                </ui:message>
+
+                <!--<lightning:select aura:id="Value_Distribution_Type__c" name="Value_Distribution_Type__c" value="{!v.SimpleRecordLoad.Value_Distribution_Type__c}" required="true" label="Target Type" class="slds-size&#45;&#45;1-of-2 slds-p-horizontal_x-small">-->
+                    <!--<option value="Individual" >Individual</option>-->
+                    <!--<option value="Group">Group</option>-->
+                <!--</lightning:select>-->
+
+            </div>
+            <div>
+                <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelDialog}"/>
+                <lightning:button variant="brand" label="Submit" onclick="{!c.saveAndCreateRecord}"/>
+            </div>
+
+        </div>
+
+        <!-- Display Lightning Data Service errors, if any -->
+        <aura:if isTrue="{!not(empty(v.recordError))}">
+            <div class="recordError">
+                <ui:message title="Error" severity="error" closable="true">
+                    {!v.recordError}
+                </ui:message>
+            </div>
+        </aura:if>
+</aura:component>

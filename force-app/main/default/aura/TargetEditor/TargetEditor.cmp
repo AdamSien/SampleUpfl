@@ -1,0 +1,83 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global" controller="PickListController" >
+    <aura:attribute name="TargetRecord" type="Object" />
+    <aura:attribute name="SimpleTargetRecord" type="Object" />
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="objectsNamesValues" type="String[]" />
+    <aura:attribute name="fieldsNamesValues" type="String[]" />
+    <aura:attribute name="dateFieldsValues" type="String[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <force:recordData aura:id="TargetRecordEditor"
+                      recordId="{!v.recordId}"
+                      layoutType="FULL"
+                      targetFields="{!v.SimpleTargetRecord}"
+                      targetRecord="{!v.TargetRecord}"
+                      targetError="{!v.recordError}"
+                      fields="Id,Name,Description__c,Field_API_Name__c,is_Active__c,Object_API_Name__c,Date_Field_API_Name__c"
+                      recordUpdated="{!c.recordUpdated}"
+                      mode="EDIT"/>
+
+
+
+    <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">Edit Target</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap ">
+
+                <lightning:input aura:id="targetName" name="targetName" label="Target Name" required="true" value="{!v.SimpleTargetRecord.Name}" placeholder="Enter Target Name" class="slds-size--1-of-1 slds-p-horizontal_x-small"/>
+
+                <lightning:input aura:id="Description__c" name="Description__c" label="Description" required="true" value="{!v.SimpleTargetRecord.Description__c}" placeholder="Enter description" class="slds-size--1-of-1 slds-p-horizontal_x-small"/>
+
+                <!--Object API Name Picklist-->
+                <lightning:select aura:id="Object_API_Name__c" name="Object_API_Name__c" required="true" label="Object API Name" value="{!v.SimpleTargetRecord.Object_API_Name__c}" onchange="{!c.getPicklists}"  class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                    <!--Iteration -->
+                    <aura:iteration items="{!v.objectsNamesValues}" var="item">
+                        <option value="{!item}">{!item}</option>
+                    </aura:iteration>
+                </lightning:select>
+
+                <!--Field API Name Picklist-->
+                <lightning:select aura:id="Field_API_Name__c" name="Field_API_Name__c" required="true" label="Field API Name" value="{!v.SimpleTargetRecord.Field_API_Name__c}" class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                    <!--Iteration -->
+                    <aura:iteration items="{!v.fieldsNamesValues}" var="item">
+                        <option value="{!item}">{!item}</option>
+                    </aura:iteration>
+                </lightning:select>
+
+                <!--Date Field API Name Picklist-->
+                <lightning:select aura:id="Date_Field_API_Name__c" name="Date_Field_API_Name__c" required="true" label="Date Field API Name" value="{!v.SimpleTargetRecord.Date_Field_API_Name__c}" class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                    <!--Iteration -->
+                    <aura:iteration items="{!v.dateFieldsValues}" var="item">
+                        <option value="{!item}">{!item}</option>
+                    </aura:iteration>
+                </lightning:select>
+
+                <lightning:select aura:id="Target_Type__c" name="Target_Type__c" value="{!v.SimpleTargetRecord.Target_Type__c}" required="true" label="Target Type" class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                    <option>Select Target Type</option>
+                    <option value="Count" >Count</option>
+                    <option value="Sum">Sum</option>
+                </lightning:select>
+
+
+                <lightning:input aura:id="is_Active__c" type="toggle" checked="{!v.SimpleTargetRecord.is_Active__c}" label="is Active?" name="is_Active__c" value="{!v.SimpleTargetRecord.is_Active__c}" class="slds-size--1-of-2 slds-p-horizontal_x-small"/>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelDialog}"/>
+                <lightning:button variant="brand" label="Submit" onclick="{!c.saveRecord}"/>
+            </div>
+        </div>
+    </div>
+    <div aura:id="overlay" class="slds-backdrop slds-backdrop--open"></div>
+
+    <!-- Display Lightning Data Service errors, if any -->
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                {!v.recordError}
+            </ui:message>
+        </div>
+    </aura:if>
+</aura:component>
